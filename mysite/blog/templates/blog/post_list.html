@@ -1,0 +1,26 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Блог по Django{% endblock %}
+
+{% block content %}
+    <h2>Блог</h2>
+
+    {% if posts %}
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <h3>
+                        <a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a>
+                    </h3>
+                    <small>Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
+                    <p>
+                        {{ post.body|truncatechars:150 }}
+                        <a href="{% url 'post_detail' slug=post.slug %}">Подробнее...</a>
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пока нет опубликованных постов.</p>
+    {% endif %}
+{% endblock %}

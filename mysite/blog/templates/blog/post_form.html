@@ -1,0 +1,29 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Создание поста{% endblock %}
+
+{% block content %}
+    <h2>Создать новый пост</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ff0000 !important; font-weight: bold; font-size: 0.9em; margin-top: 5px;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </p>
+        {% endfor %}
+        <p style="color: #666; font-size: 0.9em;">
+                Внимание: пост появится в общем списке только если включён флаг "Is published".
+        </p>
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <p><a href="{% url 'post_list' %}">← Вернуться к списку постов</a></p>
+{% endblock %}

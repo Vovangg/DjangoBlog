@@ -23,6 +23,9 @@
             {% endfor %}
         </ul>
     {% endif %}
-
-    <p><a href="{% url 'post_list' %}">← Вернуться к списку постов</a></p>
+    <p>
+        <a href="{% url 'post_list' %}">← К списку постов</a> |
+        <a href="{% url 'post_edit' slug=post.slug %}">Редактировать</a> |
+        <a href="{% url 'post_delete' slug=post.slug %}" style="color: #b00;">Удалить</a>
+    </p>
 {% endblock %}

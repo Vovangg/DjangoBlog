@@ -12,11 +12,12 @@
                     <h3>
                         <a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a>
                     </h3>
-                    <small>Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
+                    <small>Автор: {{ post.author }} | Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
                     <p>
                         {{ post.body|truncatechars:150 }}
                         <a href="{% url 'post_detail' slug=post.slug %}">Подробнее...</a>
                     </p>
+                    <p>Комментариев: {{ post.comments.count }}</p>
                 </li>
             {% endfor %}
         </ul>

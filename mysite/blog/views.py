@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
-from .forms import PostForm
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 
 
 def home(request):
@@ -16,8 +16,27 @@ def post_list(request):
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug, is_published=True)
+    comments = post.comments.all().order_by("-created_at") # получаем комменты
+    
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False) # пока не сохраняем в БД
+            comment.post = post              # привязываем к текущему посту
+            comment.save()                   # теперь сохраняем
+            return redirect("post_detail", slug=post.slug) # перезагружаем страницу
+    else:
+        form = CommentForm()
+
+    # добавляем в контекст похожие посты
     similar = Post.objects.filter(is_published=True).exclude(pk=post.pk).order_by("-created_at")[:3]
-    context = {"post": post, "similar": similar}
+    
+    context = {
+        "post": post,
+        "comments": comments,
+        "form": form,
+        "similar": similar,
+    }
     return render(request, "blog/post_detail.html", context)
 
 

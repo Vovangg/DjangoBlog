@@ -14,6 +14,34 @@
 
     <p>{{ post.body }}</p>
 
+
+    <hr>
+    <h3>Комментарии ({{ comments.count }})</h3>
+    
+    {% if comments %}
+        <ul>
+            {% for comment in comments %}
+                <li>
+                    <strong>{{ comment.author }}</strong>, 
+                    <small>{{ comment.created_at|date:"d.m.Y H:i" }}</small><br>
+                    {{ comment.text }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пока нет комментариев. Будьте первым!</p>
+    {% endif %}
+
+    <hr>
+    <h3>Оставить комментарий</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Отправить</button>
+    </form>
+
+
+    
     {% if similar %}
         <hr>
         <h3>Похожие посты</h3>
@@ -23,6 +51,8 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+
     <p>
         <a href="{% url 'post_list' %}">← К списку постов</a> |
         <a href="{% url 'post_edit' slug=post.slug %}">Редактировать</a> |

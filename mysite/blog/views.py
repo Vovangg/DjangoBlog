@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
@@ -9,8 +11,25 @@ def home(request):
 
 
 def post_list(request):
-    posts = Post.objects.filter(is_published=True).order_by("-created_at")
-    context = {"posts": posts}
+    query = request.GET.get("q", "").strip()
+    posts_qs = Post.objects.filter(is_published=True).order_by("-created_at")
+
+    if query:
+        # ищем по заголовку или тексту
+        posts_qs = posts_qs.filter(
+            Q(title__icontains=query) | Q(body__icontains=query)
+        )
+
+    # разбиваем по 5 на страницу
+    paginator = Paginator(posts_qs, 5) 
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "posts": page_obj,
+        "page_obj": page_obj,
+        "query": query,
+    }
     return render(request, "blog/post_list.html", context)
 
 

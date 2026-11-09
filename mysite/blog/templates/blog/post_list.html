@@ -4,24 +4,51 @@
 
 {% block content %}
     <h2>Блог</h2>
+
+    <form method="get" style="margin-bottom: 20px;">
+        <input type="text" name="q" placeholder="Поиск по постам" value="{{ query }}">
+        <button type="submit">Искать</button>
+        {% if query %}
+            <a href="{% url 'post_list' %}" style="margin-left: 10px;">Сбросить</a>
+        {% endif %}
+    </form>
+
     <p><a href="{% url 'post_create' %}">Создать новый пост</a></p>
+
     {% if posts %}
         <ul>
             {% for post in posts %}
-                <li>
+                <li style="margin-bottom: 20px;">
                     <h3>
                         <a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a>
                     </h3>
-                    <small>Автор: {{ post.author }} | Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
+                    <small>Создано: {{ post.created_at|date:"d.m.Y H:i" }}</small>
                     <p>
                         {{ post.body|truncatechars:150 }}
                         <a href="{% url 'post_detail' slug=post.slug %}">Подробнее...</a>
                     </p>
-                    <p>Комментариев: {{ post.comments.count }}</p>
+                    <p><small>Комментариев: {{ post.comments.count }}</small></p>
                 </li>
             {% endfor %}
         </ul>
+
+        {% if page_obj.has_other_pages %}
+            <nav style="margin-top: 30px; display: flex; gap: 10px; align-items: center;">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; Первая</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Предыдущая</a>
+                {% endif %}
+
+                <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Следующая</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Последняя &raquo;</a>
+                {% endif %}
+            </nav>
+        {% endif %}
+
     {% else %}
-        <p>Пока нет опубликованных постов.</p>
+        <p>Постов не найдено.</p>
     {% endif %}
 {% endblock %}
